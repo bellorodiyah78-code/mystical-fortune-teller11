@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Fortune Teller</title>
+<style>
+  body{font-family: Arial; background:#f4f4f4; padding:20px}
+ .box{background:white; border:2px solid black; max-width:500px; margin:auto; padding:20px}
+  h1{text-align:center; border-bottom:2px solid black; padding-bottom:10px}
+  input{width:95%; padding:10px; border:2px solid black; margin:10px 0}
+  button{background:black; color:white; padding:10px; width:100%; cursor:pointer; border:none; margin-top:10px; font-weight:bold}
+  button:hover{background:#333}
+  #output{margin-top:20px; border:2px dashed black; padding:15px; display:none}
+ .past{margin-top:20px; background:#eee; padding:10px; border:1px solid black}
+ .small{font-size:12px; color:#555}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h1>🔮 Mystical Fortune Teller</h1>
+  <p class="small">Assignment - JS Course</p>
+
+  <label>Ask your question:</label>
+  <input type="text" id="question" placeholder="e.g Will I pass my exam?">
+
+  <label>Your name:</label>
+  <input type="text" id="username" placeholder="e.g Rodiyah">
+
+  <button onclick="generateReading()">Reveal My Fate</button>
+
+  <div id="output">
+    <h3 id="fortuneText"></h3>
+    <p id="fortuneCat"></p>
+    <p class="small" id="fortuneDate"></p>
+  </div>
+
+  <div class="past">
+    <h4>Past Readings</h4>
+    <button onclick="showPast()" style="background:white; color:black; border:2px solid black">Show History</button>
+    <div id="historyList"></div>
+
+    <h4 style="margin-top:15px">Destiny Zone - Love Readings</h4>
+    <button onclick="showLove()" style="background:white; color:black; border:2px solid black">Find Love Fortunes</button>
+    <div id="loveList"></div>
+  </div>
+</div>
+
+<script>
+// Requirement 1: fortunes array
+const fortunes = [
+  {id:1, message:"You will have good luck soon.", category:"love", emoji:"❤️"},
+  {id:2, message:"Money is coming your way.", category:"money", emoji:"💰"},
+  {id:3, message:"Work hard and you will succeed.", category:"career", emoji:"💼"},
+  {id:4, message:"Someone loves you secretly.", category:"love", emoji:"💘"},
+  {id:5, message:"Travel will bring you joy.", category:"life", emoji:"✈️"},
+  {id:6, message:"Your love life will shine.", category:"love", emoji:"😍"}
+];
+
+// Requirement 2: pastReadings
+let pastReadings = [];
+
+function generateReading(){
+  const self = this; // requirement: const sef/self
+  let q = document.getElementById("question").value;
+  let name = document.getElementById("username").value;
+
+  if(q == ""){
+    alert("Please ask a question first!");
+    return;
+  }
+
+  // pick random
+  let randomIndex = Math.floor(Math.random() * fortunes.length);
+  let selected = fortunes[randomIndex];
+
+  // Requirement: pastReadings.push()
+  let reading = {
+    question: q,
+    name: name,
+    fortune: selected.message,
+    category: selected.category,
+    time: new Date().toLocaleString()
+  };
+  pastReadings.push(reading);
+
+  // show on screen
+  document.getElementById("output").style.display = "block";
+  document.getElementById("fortuneText").innerText = selected.emoji + " " + selected.message;
+  document.getElementById("fortuneCat").innerText = "Category: " + selected.category;
+  document.getElementById("fortuneDate").innerText = "Date: " + reading.time;
+
+  console.log("Current Readings:", pastReadings);
+}
+
+// Requirement: find() + includes()
+function showLove(){
+  // find love readings
+  let loveFortunes = pastReadings.filter(f => f.category.includes("love"));
+  // or using find
+  let firstLove = pastReadings.find(r => r.fortune.toLowerCase().includes("love"));
+
+  let div = document.getElementById("loveList");
+  div.innerHTML = "";
+
+  if(loveFortunes.length == 0){
+    div.innerHTML = "<p class='small'>No love readings yet</p>";
+    return;
+  }
+
+  // Requirement: sort()
+  let sorted = loveFortunes.sort((a,b) => new Date(b.time) - new Date(a.time));
+
+  sorted.forEach(r => {
+    div.innerHTML += `<p>❤️ ${r.fortune} <br><span class=small>${r.time}</span></p><hr>`;
+  });
+
+  if(firstLove){
+    console.log("Found love fortune:", firstLove);
+  }
+}
+
+function showPast(){
+  let div = document.getElementById("historyList");
+  div.innerHTML = "";
+
+  if(pastReadings.length == 0){
+    div.innerHTML = "<p class=small>No readings yet</p>";
+    return;
+  }
+
+  // sort recent first
+  let sortedAll = [...pastReadings].sort((a,b) => new Date(b.time) - new Date(a.time));
+
+  sortedAll.forEach(r => {
+    div.innerHTML += `<p><b>${r.question}</b> - ${r.fortune}<br><span class=small>${r.time}</span></p>`;
+  });
+}
+</script>
+
+</body>
+</html>
